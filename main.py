@@ -1,14 +1,18 @@
 import pandas as pd
+import matplotlib.pyplot as plt
 
+
+def get_count_of_characters(df):
+    char_count_df = df.loc[:, ["p1_character", "p2_character"] ].apply(pd.value_counts)
+    return char_count_df["p1_character"] + char_count_df["p2_character"]
 
 if __name__ == "__main__":
-    metadata = pd.read_csv("/home/hanbinsock/programman/ggacr_replays_metadata.csv")
+    metadata_df = pd.read_csv("/home/hanbinsock/programman/ggacr_replays_metadata.csv")
 
     # Metadata updates were applied after a patch in November 2021, so replays before then don't have valid
     # data after the p2_rounds_won column
     # Can just filter by `problem_bitmask > 8` if only latest version metadata are desired as that should be the only bit mask used for valid metadata.
     # Reference: https://steamcommunity.com/app/348550/discussions/0/3203746177244378016/
 
-    # metadata = metadata[metadata.problem_bitmask <= 8]
-
-
+    char_count_df = get_count_of_characters( metadata_df )
+    plt.show( char_count_df.plot.bar() )
