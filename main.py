@@ -7,17 +7,17 @@ def get_count_of_characters(df):
     return char_count_df["p1_character"] + char_count_df["p2_character"]
 
 def get_count_of_characters_for_specific_steam_id(df, steam_id):
-    p1_df = df.query("p1_steam_id == @steam_id")\
-        .loc[:, ["p1_character"]]\
-        .rename(columns = { "p1_character": "character" })
 
-    p2_df = df.query("p2_steam_id == @steam_id")\
-        .loc[:, ["p2_character"]]\
-        .rename(columns = { "p2_character": "character" })
+    def get_character_of_steam_id(x):
+        if x["p1_steam_id"] == steam_id:
+            return x["p1_character"]
+        elif x["p2_steam_id"] == steam_id:
+            return x["p2_character"]
 
-    result_df = pd.concat([p1_df, p2_df])
+    result_df = df.query( "p1_steam_id == @steam_id or p2_steam_id == @steam_id" )\
+        .apply( get_character_of_steam_id, axis=1 )
 
-    return result_df.apply(pd.value_counts)
+    return pd.value_counts(result_df)
 
 if __name__ == "__main__":
     metadata_df = pd.read_csv("/home/hanbinsock/programman/ggacr_replays_metadata.csv")
